@@ -5,7 +5,7 @@
     velocityY: number;
     radius: number;
     context: CanvasRenderingContext2D;
-    MAX_SPEED = 1000;
+    MAX_SPEED = 1200;
     MAX_SPEED_SQ = this.MAX_SPEED * this.MAX_SPEED;
 
     constructor(context: CanvasRenderingContext2D, x: number, y: number, radius: number) {

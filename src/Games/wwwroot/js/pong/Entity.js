@@ -1,6 +1,6 @@
 var Entity = (function () {
     function Entity(context, x, y, radius) {
-        this.MAX_SPEED = 1000;
+        this.MAX_SPEED = 1200;
         this.MAX_SPEED_SQ = this.MAX_SPEED * this.MAX_SPEED;
         this.x = x;
         this.y = y;
