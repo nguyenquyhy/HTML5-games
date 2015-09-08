@@ -10,7 +10,8 @@
     "Microsoft.ApplicationInsights.AspNet": "1.0.0-beta7",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-beta7",
     "Microsoft.Framework.Configuration.Json": "1.0.0-beta7",
-    "Microsoft.Framework.Configuration.UserSecrets": "1.0.0-beta7"
+    "Microsoft.Framework.Configuration.UserSecrets": "1.0.0-beta7",
+    "Microsoft.Framework.Logging.Console": "1.0.0-beta7"
   },
 
   "commands": {

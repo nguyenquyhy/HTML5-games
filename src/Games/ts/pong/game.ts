@@ -6,9 +6,9 @@
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
 
-        this.ball = new Entity(this.context, Math.random() * context.canvas.width, Math.random() * context.canvas.height, 3);
-        this.ball.velocityX = 50 * Math.cos(Math.random() * 2 * Math.PI);
-        this.ball.velocityY = 50 * Math.sin(Math.random() * 2 * Math.PI);
+        this.ball = new Entity(this.context, Math.random() * context.canvas.width, Math.random() * context.canvas.height, 12);
+        this.ball.velocityX = 200 * Math.cos(Math.random() * 2 * Math.PI);
+        this.ball.velocityY = 200 * Math.sin(Math.random() * 2 * Math.PI);
 
         this.entities = new Array<Entity>();
         this.entities.push(this.ball);

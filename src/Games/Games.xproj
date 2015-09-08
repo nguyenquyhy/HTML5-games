@@ -13,7 +13,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
-    <DevelopmentServerPort>52746</DevelopmentServerPort>
+    <DevelopmentServerPort>5555</DevelopmentServerPort>
     <ApplicationInsightsResourceId>/subscriptions/6e36a51a-6a42-41f2-a944-105db37a3ca1/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/html5-games</ApplicationInsightsResourceId>
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.targets" Condition="'$(VSToolsPath)' != ''" />

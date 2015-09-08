@@ -1,5 +1,7 @@
 var Entity = (function () {
     function Entity(context, x, y, radius) {
+        this.MAX_SPEED = 1000;
+        this.MAX_SPEED_SQ = this.MAX_SPEED * this.MAX_SPEED;
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -10,17 +12,26 @@ var Entity = (function () {
     Entity.prototype.update = function (elapsed) {
         this.x += elapsed * this.velocityX;
         this.y += elapsed * this.velocityY;
-        if (this.x - this.radius < 0) {
-            this.velocityX *= -1.1;
+        var speedSquared = this.velocityX * this.velocityX + this.velocityY * this.velocityY;
+        var increaseFactor = 1.1;
+        if (speedSquared > this.MAX_SPEED_SQ) {
+            increaseFactor = 1.0;
         }
-        if (this.x + this.radius > this.context.canvas.width) {
-            this.velocityX *= -1.1;
+        if (this.x - this.radius < 0) {
+            this.velocityX *= -1.0 * increaseFactor;
+            this.x = this.radius - this.x + this.radius;
+        }
+        if (this.context.canvas.width - (this.x + this.radius) < 0) {
+            this.velocityX *= -1.0 * increaseFactor;
+            this.x = this.context.canvas.width - (this.x + this.radius - this.context.canvas.width) - this.radius;
         }
         if (this.y - this.radius < 0) {
-            this.velocityY *= -1.1;
+            this.velocityY *= -1.0 * increaseFactor;
+            this.y = this.radius - this.y + this.radius;
         }
-        if (this.y + this.radius > this.context.canvas.height) {
-            this.velocityY *= -1.1;
+        if (this.context.canvas.height - (this.y + this.radius) < 0) {
+            this.velocityY *= -1.0 * increaseFactor;
+            this.y = this.context.canvas.height - (this.y + this.radius - this.context.canvas.height) - this.radius;
         }
     };
     Entity.prototype.draw = function () {

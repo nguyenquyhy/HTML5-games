@@ -35,19 +35,24 @@ namespace Games
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
+            //services.AddApplicationInsightsTelemetry(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerfactory)
         {
-            app.UseApplicationInsightsRequestTelemetry();
+            // Add the console logger.
+            loggerfactory.AddConsole(minLevel: LogLevel.Warning);
+
+            //app.UseApplicationInsightsRequestTelemetry();
 
             // Add the following to the request pipeline only in development environment.
             if (env.IsEnvironment("Development"))
             {
                 app.UseBrowserLink();
             }
-            app.UseApplicationInsightsExceptionTelemetry();
+
+            //app.UseApplicationInsightsExceptionTelemetry();
+
             app.UseStaticFiles();
         }
     }
