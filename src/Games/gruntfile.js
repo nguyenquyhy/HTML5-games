@@ -12,10 +12,19 @@ module.exports = function (grunt) {
                     cleanTargetDir: false
                 }
             }
+        },
+        ts: {
+            default: {
+                files: [
+                    { src: ["ts/pong/*.ts"], dest: "wwwroot/js/pong" }
+                ]
+            },
+            watch: "ts"
         }
     });
 
-    grunt.registerTask("default", ["bower:install"]);
+    grunt.registerTask("default", ["bower:install", "ts"]);
 
-    grunt.loadNpmTasks('grunt-bower');
+    grunt.loadNpmTasks('grunt-bower-task');
+    grunt.loadNpmTasks('grunt-ts');
 };

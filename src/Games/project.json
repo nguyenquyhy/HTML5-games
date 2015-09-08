@@ -1,6 +1,7 @@
 ﻿{
   "webroot": "wwwroot",
   "version": "1.0.0-*",
+  "userSecretsId": "aspnet5-Games-20150908011337",
 
   "dependencies": {
     "Microsoft.AspNet.Server.IIS": "1.0.0-beta7",
@@ -31,6 +32,7 @@
   "exclude": [
     "wwwroot",
     "node_modules",
-    "bower_components"
+    "bower_components",
+    ".tscache"
   ]
 }
