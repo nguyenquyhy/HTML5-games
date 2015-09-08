@@ -1,0 +1,8 @@
+{
+  "name": "ASP.NET",
+  "private": true,
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "box-2d-web": "~2.1.3"
+  }
+}
