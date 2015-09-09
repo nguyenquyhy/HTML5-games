@@ -2,6 +2,8 @@
     position: Vector2;
     velocity: Vector2;
     context: CanvasRenderingContext2D;
+    type: string;
+
     MAX_SPEED = 1200;
     MAX_SPEED_SQ = this.MAX_SPEED * this.MAX_SPEED;
 
@@ -9,42 +11,19 @@
         this.context = context;
         this.position = new Vector2(x, y);
         this.velocity = new Vector2(velocityX, velocityY);
+        this.type = 'Entity';
     }
 
     update(elapsed: number) {
-        this.position.inc(this.velocity.multiply(elapsed));
+        this.position.selfAdd(this.velocity.scale(elapsed));
     }
 
     draw() {
 
     }
-}
 
-class Vector2 {
-    x: number;
-    y: number;
-
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    squareLength() {
-        return this.x * this.x + this.y * this.y;
-    }
-
-    inc(value: Vector2) {
-        this.x += value.x;
-        this.y += value.y;
-    }
-
-    scale(value: number) {
-        this.x *= value;
-        this.y *= value;
-    }
-
-    multiply(value: number): Vector2 {
-        return new Vector2(this.x * value, this.y * value);
+    square(value: number): number {
+        return value * value;
     }
 }
 
@@ -54,6 +33,7 @@ class Circle extends Entity {
     constructor(context: CanvasRenderingContext2D, x: number, y: number, velocityX: number, velocityY: number, radius: number) {
         super(context, x, y, velocityX, velocityY);
         this.radius = radius;
+        this.type = 'Circle';
     }
 
     update(elapsed: number) {
@@ -82,6 +62,31 @@ class Circle extends Entity {
         }
     }
 
+    // predicting collision
+    checkCollisions(entities: Entity[], elapsed: number): Collision {
+        var currentSpeed = Math.sqrt(this.velocity.squareLength());
+        var traveledDistance = currentSpeed * elapsed;
+
+        var nearestCollision: Collision = null;
+        for (var i = 0; i < entities.length; i++) {
+            var entity = entities[i];
+            if (entity instanceof Circle) {
+                var centerDistanceSq = this.position.subtract(entity.position).squareLength();
+                if (centerDistanceSq < this.square(this.radius + entity.radius + traveledDistance)) {
+                    var collision = new Collision(Math.sqrt(centerDistanceSq) - (this.radius + entity.radius), entity);
+                    if (nearestCollision === null || nearestCollision.distance > collision.distance)
+                        nearestCollision = collision;
+                }
+            } else if (entity instanceof ControlBar) {
+                // Check 4 edges
+
+                // Check 4 corners
+            }
+        }
+
+        return nearestCollision;
+    }
+
     draw() {
         super.draw();
 
@@ -93,19 +98,33 @@ class Circle extends Entity {
         this.context.stroke();
         this.context.fill();
     }
-}
 
+    collideEdge = () => {
+
+    }
+}
 
 class ControlBar extends Entity {
     size: Vector2;
+    keySpeed: number = 2;
 
     constructor(context: CanvasRenderingContext2D, x: number, y: number, velocityX: number, velocityY: number, width: number, height: number) {
         super(context, x, y, velocityX, velocityY);
         this.size = new Vector2(width, height);
+        this.type = 'ControlBar';
     }
 
     update(elapsed: number) {
         super.update(elapsed);
+
+        if (this.position.y < 0) {
+            this.position.y = -this.position.y;
+            this.velocity.y *= -1;
+        }
+        if (this.position.y + this.size.y > this.context.canvas.height) {
+            this.position.y = this.context.canvas.height - (this.position.y + this.size.y - this.context.canvas.height) - this.size.y;
+            this.velocity.y *= -1;
+        }
     }
 
     draw() {
@@ -113,4 +132,22 @@ class ControlBar extends Entity {
 
         this.context.strokeRect(this.position.x, this.position.y, this.size.x, this.size.y);
     }
+
+    up() {
+        this.position.y -= this.keySpeed;
+    }
+
+    down() {
+        this.position.y += this.keySpeed;
+    }
+}
+
+class Collision {
+    constructor(distance: number, entity: Entity) {
+        this.distance = distance;
+        this.entity = entity;
+    }
+
+    distance: number;
+    entity: Entity;
 }

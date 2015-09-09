@@ -21,12 +21,20 @@
         this.players[0] = new ControlBar(this.context,
             20, 0.5 * (context.canvas.height - barWidth), 0, 0, barHeight, barWidth);
         this.players[1] = new ControlBar(this.context,
-            context.canvas.width - 20 - barHeight, 0.5 * (context.canvas.height - barWidth), 0, 0, barHeight, barWidth);
+            context.canvas.width - 20 - barHeight, 0.5 * (context.canvas.height - barWidth),
+            0, 100, barHeight, barWidth);
 
         this.entities = new Array<Entity>();
         this.entities.push(this.ball);
         this.entities.push(this.players[0]);
         this.entities.push(this.players[1]);
+    }
+
+    doKeyDown(e) {
+        if (e.keyCode == 38)
+            this.players[0].up();
+        else if (e.keyCode == 40)
+            this.players[0].down();
     }
 
     update(elapsed: number) {
@@ -48,7 +56,7 @@
 }
 
 var lastUpdate;
-var game;
+var game: Game;
 
 function tick() {
     var now = Date.now();
@@ -70,4 +78,10 @@ if (canvas.getContext) {
     var context = canvas.getContext('2d');
     game = new Game(context);
     tick();
+
+    window.addEventListener("keydown", doKeyDown, true);
+}
+
+function doKeyDown(e) {
+    game.doKeyDown(e);
 }
