@@ -1,5 +1,6 @@
 var Game = (function () {
     function Game(context) {
+        this.keys = {};
         this.context = context;
         var initialSpeed = 200;
         this.ball = new Circle(this.context, 0.5 * context.canvas.width, 0.5 * context.canvas.height, initialSpeed * Math.cos(Math.random() * 2 * Math.PI), initialSpeed * Math.sin(Math.random() * 2 * Math.PI), 12);
@@ -14,12 +15,16 @@ var Game = (function () {
         this.entities.push(this.players[1]);
     }
     Game.prototype.doKeyDown = function (e) {
-        if (e.keyCode == 38)
-            this.players[0].up();
-        else if (e.keyCode == 40)
-            this.players[0].down();
+        this.keys[e.keyCode] = true;
+    };
+    Game.prototype.doKeyUp = function (e) {
+        delete this.keys[e.keyCode];
     };
     Game.prototype.update = function (elapsed) {
+        if (this.keys[38])
+            this.players[0].up();
+        else if (this.keys[40])
+            this.players[0].down();
         if (this.entities) {
             for (var i = 0; i < this.entities.length; i++) {
                 this.entities[i].update(elapsed);
@@ -55,10 +60,13 @@ var canvas = document.getElementById('mainCanvas');
 if (canvas.getContext) {
     var context = canvas.getContext('2d');
     game = new Game(context);
+    window.addEventListener("keydown", function (e) {
+        game.doKeyDown(e);
+    }, true);
+    window.addEventListener("keyup", function (e) {
+        game.doKeyUp(e);
+    }, true);
+    window.requestAnimationFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['msRequestAnimationFrame'] || window['mozRequestAnimationFrame'];
     tick();
-    window.addEventListener("keydown", doKeyDown, true);
-}
-function doKeyDown(e) {
-    game.doKeyDown(e);
 }
 //# sourceMappingURL=game.js.map

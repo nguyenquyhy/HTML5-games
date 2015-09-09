@@ -3,6 +3,7 @@
     entities: Entity[];
     ball: Entity;
     players: ControlBar[];
+    keys = {};
 
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
@@ -31,13 +32,19 @@
     }
 
     doKeyDown(e) {
-        if (e.keyCode == 38)
-            this.players[0].up();
-        else if (e.keyCode == 40)
-            this.players[0].down();
+        this.keys[e.keyCode] = true;
+    }
+
+    doKeyUp(e) {
+        delete this.keys[e.keyCode];
     }
 
     update(elapsed: number) {
+        if (this.keys[38])
+            this.players[0].up();
+        else if (this.keys[40])
+            this.players[0].down();
+
         if (this.entities) {
             for (var i = 0; i < this.entities.length; i++) {
                 this.entities[i].update(elapsed);
@@ -77,11 +84,16 @@ var canvas = <HTMLCanvasElement>document.getElementById('mainCanvas');
 if (canvas.getContext) {
     var context = canvas.getContext('2d');
     game = new Game(context);
+
+    window.addEventListener("keydown", function (e) {
+        game.doKeyDown(e);
+    }, true);
+
+    window.addEventListener("keyup", function (e) {
+        game.doKeyUp(e);
+    }, true);
+
+    window.requestAnimationFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['msRequestAnimationFrame'] || window['mozRequestAnimationFrame'];
+
     tick();
-
-    window.addEventListener("keydown", doKeyDown, true);
-}
-
-function doKeyDown(e) {
-    game.doKeyDown(e);
 }
