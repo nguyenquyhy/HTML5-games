@@ -27,7 +27,14 @@ var Circle = (function (_super) {
     __extends(Circle, _super);
     function Circle(context, x, y, velocityX, velocityY, radius) {
         _super.call(this, context, x, y, velocityX, velocityY);
-        this.collideEdge = function () {
+        this.collideEdge = function (Ox, Oy, r, vx, vy, x1, y1, y2) {
+            var t = Math.min((x1 - Ox - r) / vx, (x1 - Ox + r) / vx);
+            if (t < 0)
+                return t;
+            var y = Oy + vy * t;
+            if (y1 <= y && y <= y2)
+                return t;
+            return -1;
         };
         this.radius = radius;
         this.type = 'Circle';
@@ -70,6 +77,9 @@ var Circle = (function (_super) {
                 }
             }
             else if (entity instanceof ControlBar) {
+                var t = this.collideEdge(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y, entity.position.y + entity.size.y);
+                if (t < 0 || t >= elapsed) {
+                }
             }
         }
         return nearestCollision;

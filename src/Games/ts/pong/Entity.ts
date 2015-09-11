@@ -79,6 +79,13 @@ class Circle extends Entity {
                 }
             } else if (entity instanceof ControlBar) {
                 // Check 4 edges
+                var t = this.collideEdge(this.position.x, this.position.y, this.radius,
+                    this.velocity.x, this.velocity.y,
+                    entity.position.x, entity.position.y, entity.position.y + entity.size.y);
+
+                if (t < 0 || t >= elapsed) {
+
+                }
 
                 // Check 4 corners
             }
@@ -99,8 +106,13 @@ class Circle extends Entity {
         this.context.fill();
     }
 
-    collideEdge = () => {
-
+    collideEdge = (Ox, Oy, r, vx, vy, x1, y1, y2) => {
+        var t = Math.min((x1 - Ox - r) / vx, (x1 - Ox + r) / vx);
+        if (t < 0) return t;
+        var y = Oy + vy * t;
+        if (y1 <= y && y <= y2)
+            return t;
+        return -1;
     }
 }
 
