@@ -14,6 +14,14 @@ var Vector2 = (function () {
         this.x *= value;
         this.y *= value;
     };
+    Vector2.prototype.selfNormalize = function () {
+        var squareLength = this.squareLength();
+        if (squareLength != 1) {
+            var length = Math.sqrt(squareLength);
+            this.x /= length;
+            this.y /= length;
+        }
+    };
     Vector2.prototype.scale = function (value) {
         return new Vector2(this.x * value, this.y * value);
     };
@@ -25,6 +33,9 @@ var Vector2 = (function () {
     };
     Vector2.prototype.crossProduct = function (vector) {
         return this.x * vector.y + this.y * vector.x;
+    };
+    Vector2.prototype.dotProduct = function (vector) {
+        return this.x * vector.x + this.y * vector.y;
     };
     return Vector2;
 })();

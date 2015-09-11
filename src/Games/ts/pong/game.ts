@@ -17,19 +17,49 @@
             initialSpeed * Math.sin(Math.random() * 2 * Math.PI),
             12);
 
-        var barWidth = 90;
-        var barHeight = 10;
+        var barLength = 90;
+        var barDepth = 10;
         this.players = new Array<ControlBar>(2);
         this.players[0] = new ControlBar(this.context,
-            20, 0.5 * (context.canvas.height - barWidth), 0, 0, barHeight, barWidth);
+            20, 0.5 * (context.canvas.height - barLength), 0, 0, barDepth, barLength);
         this.players[1] = new ControlBar(this.context,
-            context.canvas.width - 20 - barHeight, 0.5 * (context.canvas.height - barWidth),
-            0, 100, barHeight, barWidth);
+            context.canvas.width - 20 - barDepth, 0.5 * (context.canvas.height - barLength),
+            0, 100, barDepth, barLength);
 
         this.entities = new Array<Entity>();
         this.entities.push(this.ball);
         this.entities.push(this.players[0]);
         this.entities.push(this.players[1]);
+    }
+
+    update(elapsed: number) {
+        if (this.keys[38])
+            this.players[0].up();
+        else if (this.keys[40])
+            this.players[0].down();
+
+        if (this.mouse !== null) {
+            if (this.mouse.y > this.context.canvas.height / 2)
+                this.players[0].down();
+            else
+                this.players[0].up();
+        }
+
+        if (this.entities) {
+            for (var i = 0; i < this.entities.length; i++) {
+                var entity = this.entities[i];
+                entity.update(elapsed, this.entities);
+            }
+        }
+    }
+
+    render(elapsed: number) {
+        this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
+        if (this.entities) {
+            for (var i = 0; i < this.entities.length; i++) {
+                this.entities[i].draw();
+            }
+        }
     }
 
     doKeyDown(e) {
@@ -55,35 +85,6 @@
 
     doMouseUp(e) {
         this.mouse = null;
-    }
-
-    update(elapsed: number) {
-        if (this.keys[38])
-            this.players[0].up();
-        else if (this.keys[40])
-            this.players[0].down();
-
-        if (this.mouse !== null) {
-            if (this.mouse.y > this.context.canvas.height / 2)
-                this.players[0].down();
-            else
-                this.players[0].up();
-        }
-
-        if (this.entities) {
-            for (var i = 0; i < this.entities.length; i++) {
-                this.entities[i].update(elapsed);
-            }
-        }
-    }
-
-    render(elapsed: number) {
-        this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
-        if (this.entities) {
-            for (var i = 0; i < this.entities.length; i++) {
-                this.entities[i].draw();
-            }
-        }
     }
 }
 

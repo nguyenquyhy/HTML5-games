@@ -14,7 +14,7 @@
         this.type = 'Entity';
     }
 
-    update(elapsed: number) {
+    update(elapsed: number, entities: Entity[]) {
         this.position.selfAdd(this.velocity.scale(elapsed));
     }
 
@@ -36,58 +36,115 @@ class Circle extends Entity {
         this.type = 'Circle';
     }
 
-    update(elapsed: number) {
-        super.update(elapsed);
-
+    update(elapsed: number, entities: Entity[]) {
         var increaseFactor = 1.1;
         if (this.velocity.squareLength() > this.MAX_SPEED_SQ) {
             increaseFactor = 1.0;
         }
 
-        if (this.position.x - this.radius < 0) {
-            this.velocity.x *= -1.0 * increaseFactor;
-            this.position.x = this.radius - this.position.x + this.radius;
-        }
-        if (this.context.canvas.width - (this.position.x + this.radius) < 0) {
-            this.velocity.x *= -1.0 * increaseFactor;
-            this.position.x = this.context.canvas.width - (this.position.x + this.radius - this.context.canvas.width) - this.radius;
-        }
-        if (this.position.y - this.radius < 0) {
-            this.velocity.y *= -1.0 * increaseFactor;
-            this.position.y = this.radius - this.position.y + this.radius;
-        }
-        if (this.context.canvas.height - (this.position.y + this.radius) < 0) {
-            this.velocity.y *= -1.0 * increaseFactor;
-            this.position.y = this.context.canvas.height - (this.position.y + this.radius - this.context.canvas.height) - this.radius;
+        var collision = this.checkCollisions(elapsed, entities);
+
+        if (collision === null) {
+            super.update(elapsed, entities);
+
+            if (this.position.x - this.radius < 0) {
+                this.velocity.x *= -1.0 * increaseFactor;
+                this.position.x = this.radius - this.position.x + this.radius;
+            }
+            if (this.context.canvas.width - (this.position.x + this.radius) < 0) {
+                this.velocity.x *= -1.0 * increaseFactor;
+                this.position.x = this.context.canvas.width - (this.position.x + this.radius - this.context.canvas.width) - this.radius;
+            }
+            if (this.position.y - this.radius < 0) {
+                this.velocity.y *= -1.0 * increaseFactor;
+                this.position.y = this.radius - this.position.y + this.radius;
+            }
+            if (this.context.canvas.height - (this.position.y + this.radius) < 0) {
+                this.velocity.y *= -1.0 * increaseFactor;
+                this.position.y = this.context.canvas.height - (this.position.y + this.radius - this.context.canvas.height) - this.radius;
+            }
+        } else {
+            console.log('Collided');
+            var nextPosition = this.position.add(this.velocity.scale(collision.time));
+
+            var timeLeft = elapsed - collision.time;
+            collision.normal.selfNormalize();
+            var velocityReversed = this.velocity.scale(-1);
+            var projectionReversed = collision.normal.scale(velocityReversed.dotProduct(collision.normal));
+            var diff = projectionReversed.subtract(velocityReversed).scale(2);
+            var reflectedVelocity = velocityReversed.add(diff);
+
+            nextPosition.selfAdd(reflectedVelocity.scale(timeLeft));
+
+            this.position = nextPosition;
+            this.velocity = reflectedVelocity;
         }
     }
 
     // predicting collision
-    checkCollisions(entities: Entity[], elapsed: number): Collision {
+    checkCollisions(elapsed: number, entities: Entity[]): Collision {
         var currentSpeed = Math.sqrt(this.velocity.squareLength());
         var traveledDistance = currentSpeed * elapsed;
 
         var nearestCollision: Collision = null;
         for (var i = 0; i < entities.length; i++) {
+            // Scan all entities
             var entity = entities[i];
-            if (entity instanceof Circle) {
-                var centerDistanceSq = this.position.subtract(entity.position).squareLength();
-                if (centerDistanceSq < this.square(this.radius + entity.radius + traveledDistance)) {
-                    var collision = new Collision(Math.sqrt(centerDistanceSq) - (this.radius + entity.radius), entity);
-                    if (nearestCollision === null || nearestCollision.distance > collision.distance)
-                        nearestCollision = collision;
+            if (entity !== this) {
+                if (entity instanceof Circle) {
+                    var centerVector = this.position.subtract(entity.position);
+                    var centerDistanceSq = centerVector.squareLength();
+                    if (centerDistanceSq < this.square(this.radius + entity.radius + traveledDistance)) {
+                        // Collide with a circle
+                        var time = (Math.sqrt(centerDistanceSq) - (this.radius + entity.radius)) / currentSpeed;
+                        if (nearestCollision === null || nearestCollision.time > time)
+                            nearestCollision = new Collision(time, entity, centerVector);
+                    }
+                } else if (entity instanceof ControlBar) {
+                    // Check 4 edges
+                    // Handle vertical edges
+                    var t1 = this.collideEdge(this.position.x, this.position.y, this.radius,
+                        this.velocity.x, this.velocity.y,
+                        entity.position.x, entity.position.y, entity.position.y + entity.size.y);
+
+                    var t2 = this.collideEdge(this.position.x, this.position.y, this.radius,
+                        this.velocity.x, this.velocity.y,
+                        entity.position.x + entity.size.x, entity.position.y, entity.position.y + entity.size.y);
+
+                    // Swap x and y to make the code handle horizontal edges
+                    var t3 = this.collideEdge(this.position.y, this.position.x, this.radius,
+                        this.velocity.y, this.velocity.x,
+                        entity.position.y, entity.position.x, entity.position.x + entity.size.x);
+
+                    var t4 = this.collideEdge(this.position.y, this.position.x, this.radius,
+                        this.velocity.y, this.velocity.x,
+                        entity.position.y + entity.size.y, entity.position.x, entity.position.x + entity.size.x);
+
+                    var normal = new Vector2(-1, 0);
+                    if (t2 > 0 && (t1 < 0 || t1 > t2)) {
+                        t1 = t2; normal = new Vector2(1, 0);
+                    }
+                    if (t3 > 0 && (t1 < 0 || t1 > t3)) {
+                        t1 = t3; normal = new Vector2(0, -1);
+                    }
+                    if (t4 > 0 && (t1 < 0 || t1 > t4)) {
+                        t1 = t4; normal = new Vector2(0, 1);
+                    }
+
+                    if (t1 >= 0) {
+                        console.log(t1 + ' ' + elapsed);
+                    }
+
+                    if (t1 >= 0 && t1 < elapsed) {
+                        // Collide with edge
+                        if (nearestCollision === null || nearestCollision.time > t1)
+                            nearestCollision = new Collision(t1, entity, normal);
+                    }
+                    else {
+                        // Check 4 corners
+
+                    }
                 }
-            } else if (entity instanceof ControlBar) {
-                // Check 4 edges
-                var t = this.collideEdge(this.position.x, this.position.y, this.radius,
-                    this.velocity.x, this.velocity.y,
-                    entity.position.x, entity.position.y, entity.position.y + entity.size.y);
-
-                if (t < 0 || t >= elapsed) {
-
-                }
-
-                // Check 4 corners
             }
         }
 
@@ -108,7 +165,7 @@ class Circle extends Entity {
 
     collideEdge = (Ox, Oy, r, vx, vy, x1, y1, y2) => {
         var t = Math.min((x1 - Ox - r) / vx, (x1 - Ox + r) / vx);
-        if (t < 0) return t;
+        if (t < 0) return -1;
         var y = Oy + vy * t;
         if (y1 <= y && y <= y2)
             return t;
@@ -118,7 +175,7 @@ class Circle extends Entity {
 
 class ControlBar extends Entity {
     size: Vector2;
-    keySpeed: number = 2;
+    keySpeed: number = 4;
 
     constructor(context: CanvasRenderingContext2D, x: number, y: number, velocityX: number, velocityY: number, width: number, height: number) {
         super(context, x, y, velocityX, velocityY);
@@ -126,8 +183,8 @@ class ControlBar extends Entity {
         this.type = 'ControlBar';
     }
 
-    update(elapsed: number) {
-        super.update(elapsed);
+    update(elapsed: number, entities: Entity[]) {
+        super.update(elapsed, entities);
 
         if (this.position.y < 0) {
             this.position.y = -this.position.y;
@@ -155,11 +212,13 @@ class ControlBar extends Entity {
 }
 
 class Collision {
-    constructor(distance: number, entity: Entity) {
-        this.distance = distance;
+    constructor(time: number, entity: Entity, normal: Vector2) {
+        this.time = time;
         this.entity = entity;
+        this.normal = normal;
     }
 
-    distance: number;
+    time: number;
     entity: Entity;
+    normal: Vector2;
 }
