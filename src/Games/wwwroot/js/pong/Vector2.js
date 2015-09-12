@@ -37,5 +37,8 @@ var Vector2 = (function () {
     Vector2.prototype.dotProduct = function (vector) {
         return this.x * vector.x + this.y * vector.y;
     };
+    Vector2.prototype.toString = function () {
+        return this.x + " " + this.y;
+    };
     return Vector2;
 })();

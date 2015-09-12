@@ -49,4 +49,8 @@
     dotProduct(vector: Vector2): number {
         return this.x * vector.x + this.y * vector.y;
     }
+
+    toString(): string {
+        return this.x + " " + this.y;
+    }
 }

@@ -1,4 +1,4 @@
-/// <binding ProjectOpened='ts:default' />
+/// <binding ProjectOpened='ts:default, ts:tests' />
 /*
 This file in the main entry point for defining grunt tasks and using grunt plugins.
 Click here to learn more. http://go.microsoft.com/fwlink/?LinkID=513275&clcid=0x409
@@ -17,9 +17,9 @@ module.exports = function (grunt) {
         ts: {
             default: {
                 files: [
-                    { src: ["ts/pong/*.ts", "typings/**/*.ts"], dest: "wwwroot/js/pong" }
+                    { src: ["ts/src/pong/*.ts", "typings/**/*.ts"], dest: "wwwroot/js/pong" }
                 ],
-                watch: "ts",
+                watch: "ts/src",
                 options: {
                     fast: 'never',
                     declaration: true
@@ -29,6 +29,7 @@ module.exports = function (grunt) {
                 files: [
                     { src: ["ts/tests/pong/collisions.ts", "typings/**/*.ts", "wwwroot/js/pong/*.d.ts"], dest: "wwwroot/tests/pong/js" }
                 ],
+                watch: "ts/tests",
                 options: {
                     fast: 'never'
                 }

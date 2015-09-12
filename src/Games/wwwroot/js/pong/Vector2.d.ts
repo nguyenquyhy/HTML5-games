@@ -11,4 +11,5 @@ declare class Vector2 {
     subtract(vector: Vector2): Vector2;
     crossProduct(vector: Vector2): number;
     dotProduct(vector: Vector2): number;
+    toString(): string;
 }
