@@ -11,6 +11,10 @@ var Game = (function () {
         this.players[0] = new ControlBar(this.context, 20, 0.5 * (context.canvas.height - this.INITIAL_BAR_LENGTH), 0, 0, this.INITIAL_BAR_DEPTH, this.INITIAL_BAR_LENGTH);
         this.players[1] = new ControlBar(this.context, context.canvas.width - 20 - this.INITIAL_BAR_DEPTH, 0.5 * (context.canvas.height - this.INITIAL_BAR_LENGTH), 0, 100, this.INITIAL_BAR_DEPTH, this.INITIAL_BAR_LENGTH);
         this.entities = new Array();
+        this.entities.push(new Boundary(context, 0, 0, new Vector2(0, 1)));
+        this.entities.push(new Boundary(context, 0, context.canvas.height, new Vector2(0, -1)));
+        this.entities.push(new Boundary(context, 0, 0, new Vector2(1, 0)));
+        this.entities.push(new Boundary(context, context.canvas.width, 0, new Vector2(-1, 0)));
         this.entities.push(this.ball);
         this.entities.push(this.players[0]);
         this.entities.push(this.players[1]);
