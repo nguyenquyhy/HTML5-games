@@ -145,12 +145,24 @@
 
 var lastUpdate;
 var game: Game;
+var txtFPS = $('#txtFPS');
+var sum = 0;
+var count = 0;
 
 function tick() {
     var now = Date.now();
 
     if (lastUpdate) {
         var elapsed = (now - lastUpdate) / 1000;
+
+        sum += elapsed;
+        count++;
+        if (sum > 1) {
+            txtFPS.text(Math.round(count / sum * 100) / 100);
+            count = 0;
+            sum = 0;
+        }
+
         lastUpdate = now;
         game.update(elapsed);
         game.render(elapsed);

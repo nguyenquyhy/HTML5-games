@@ -22,6 +22,9 @@ declare class Game {
 }
 declare var lastUpdate: any;
 declare var game: Game;
+declare var txtFPS: JQuery;
+declare var sum: number;
+declare var count: number;
 declare function tick(): void;
 declare var canvas: HTMLCanvasElement;
 declare var context: CanvasRenderingContext2D;
