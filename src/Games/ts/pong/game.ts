@@ -9,6 +9,8 @@
     INITIAL_BAR_LENGTH = 50;
     INITIAL_BAR_DEPTH = 10;
 
+    scores: number[];
+
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
 
@@ -31,6 +33,8 @@
         this.entities.push(this.ball);
         this.entities.push(this.players[0]);
         this.entities.push(this.players[1]);
+
+        this.scores = [0, 0];
     }
 
     update(elapsed: number) {
@@ -55,7 +59,21 @@
     }
 
     render(elapsed: number) {
+        // Clear everything
         this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
+
+        // Draw background
+        this.context.strokeStyle = "#000000";
+        this.context.moveTo(this.context.canvas.width / 2, 0);
+        this.context.lineTo(this.context.canvas.width / 2, this.context.canvas.height);
+        this.context.stroke();
+
+        this.context.font = "20px Arial";
+        this.context.fillStyle = "#000000";
+        this.context.fillText(this.scores[0].toString(), this.context.canvas.width / 2 - 15, 20);
+        this.context.fillText(this.scores[1].toString(), this.context.canvas.width / 2 + 5, 20);
+
+        // Draw entities
         if (this.entities) {
             for (var i = 0; i < this.entities.length; i++) {
                 this.entities[i].draw();

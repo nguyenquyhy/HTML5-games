@@ -92,6 +92,14 @@ var Circle = (function (_super) {
             this.velocity = reflectedVelocity;
         }
     };
+    Circle.prototype.draw = function () {
+        _super.prototype.draw.call(this);
+        this.context.strokeStyle = "#000000";
+        this.context.fillStyle = "#FFFF00";
+        this.context.beginPath();
+        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
+        this.context.closePath();
+    };
     Circle.prototype.checkCollisions = function (elapsed, entities) {
         var currentSpeed = Math.sqrt(this.velocity.squareLength());
         var traveledDistance = currentSpeed * elapsed;
@@ -157,16 +165,6 @@ var Circle = (function (_super) {
             }
         }
         return nearestCollision;
-    };
-    Circle.prototype.draw = function () {
-        _super.prototype.draw.call(this);
-        this.context.strokeStyle = "#000000";
-        this.context.fillStyle = "#FFFF00";
-        this.context.beginPath();
-        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
-        this.context.closePath();
-        this.context.stroke();
-        this.context.fill();
     };
     return Circle;
 })(Entity);

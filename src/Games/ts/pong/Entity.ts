@@ -80,6 +80,18 @@ class Circle extends Entity {
         }
     }
 
+    draw() {
+        super.draw();
+
+        this.context.strokeStyle = "#000000";
+        this.context.fillStyle = "#FFFF00";
+        this.context.beginPath();
+        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
+        this.context.closePath();
+        //this.context.stroke();
+        //this.context.fill();
+    }
+
     checkCollisions(elapsed: number, entities: Entity[]): Collision {
         var currentSpeed = Math.sqrt(this.velocity.squareLength());
         var traveledDistance = currentSpeed * elapsed;
@@ -167,18 +179,6 @@ class Circle extends Entity {
         }
 
         return nearestCollision;
-    }
-
-    draw() {
-        super.draw();
-
-        this.context.strokeStyle = "#000000";
-        this.context.fillStyle = "#FFFF00";
-        this.context.beginPath();
-        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
-        this.context.closePath();
-        this.context.stroke();
-        this.context.fill();
     }
 
     collideEdge = (Ox, Oy, r, vx, vy, x1, y1, y2) => {
