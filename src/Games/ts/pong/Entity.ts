@@ -64,7 +64,6 @@ class Circle extends Entity {
                 this.position.y = this.context.canvas.height - (this.position.y + this.radius - this.context.canvas.height) - this.radius;
             }
         } else {
-            console.log('Collided');
             var nextPosition = this.position.add(this.velocity.scale(collision.time));
 
             var timeLeft = elapsed - collision.time;
@@ -81,7 +80,6 @@ class Circle extends Entity {
         }
     }
 
-    // predicting collision
     checkCollisions(elapsed: number, entities: Entity[]): Collision {
         var currentSpeed = Math.sqrt(this.velocity.squareLength());
         var traveledDistance = currentSpeed * elapsed;
@@ -131,18 +129,38 @@ class Circle extends Entity {
                         t1 = t4; normal = new Vector2(0, 1);
                     }
 
-                    if (t1 >= 0) {
-                        console.log(t1 + ' ' + elapsed);
-                    }
-
                     if (t1 >= 0 && t1 < elapsed) {
                         // Collide with edge
                         if (nearestCollision === null || nearestCollision.time > t1)
                             nearestCollision = new Collision(t1, entity, normal);
                     }
                     else {
-                        // Check 4 corners
+                        // No edge collision => check 4 corners
+                        var tc1 = this.collideCorner(this.position.x, this.position.y, this.radius,
+                            this.velocity.x, this.velocity.y, entity.position.x, entity.position.y);
+                        var tc2 = this.collideCorner(this.position.x, this.position.y, this.radius,
+                            this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y);
+                        var tc3 = this.collideCorner(this.position.x, this.position.y, this.radius,
+                            this.velocity.x, this.velocity.y, entity.position.x, entity.position.y + entity.size.y);
+                        var tc4 = this.collideCorner(this.position.x, this.position.y, this.radius,
+                            this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y + entity.size.y);
 
+                        normal = new Vector2(-1, -1);
+                        if (tc2 > 0 && (tc1 < 0 || tc1 > tc2)) {
+                            tc1 = tc2; normal = new Vector2(1, -1);
+                        }
+                        if (tc3 > 0 && (tc1 < 0 || tc1 > tc3)) {
+                            tc1 = tc3; normal = new Vector2(-1, 1);
+                        }
+                        if (tc4 > 0 && (tc1 < 0 || tc1 > tc4)) {
+                            tc1 = tc4; normal = new Vector2(1, 1);
+                        }
+
+                        if (tc1 >= 0 && tc1 < elapsed) {
+                            // Collide with edge
+                            if (nearestCollision === null || nearestCollision.time > tc1)
+                                nearestCollision = new Collision(tc1, entity, normal);
+                        }
                     }
                 }
             }
@@ -170,6 +188,22 @@ class Circle extends Entity {
         if (y1 <= y && y <= y2)
             return t;
         return -1;
+    }
+
+    collideCorner = (Ox, Oy, r, vx, vy, x1, y1) => {
+        var dx = x1 - Ox;
+        var dy = y1 - Oy;
+        var a = vx * vx + vy * vy;
+        var b = -2 * (dx * vx + dy * vy);
+        var c = dx * dx + dy * dy - r * r;
+        var diff = b * b - 4 * a * c;
+        if (diff < 0)
+            return -1;
+        else if (diff == 0)
+            return -b / (2 * a);
+        else {
+            return (-b - Math.sqrt(diff)) / (2 * a); // take only the smaller solution
+        }
     }
 }
 
