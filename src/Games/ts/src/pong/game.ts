@@ -176,6 +176,7 @@ if (canvas.getContext) {
     }, true);
 
     if (window['PointerEvent']) {
+        $('#txtPointerEvent').text('Supported');
         canvas.addEventListener("pointermove", function (event) {
             game.doMouseMove(event);
         }, false);
@@ -190,6 +191,7 @@ if (canvas.getContext) {
     	   /* User agent and hardware support multi-touch */
     }
     else {
+        $('#txtPointerEvent').text('Not supported');
         //Provide fallback for user agents that do not support Pointer Events
         canvas.addEventListener("mousemove", function (event) {
             game.doMouseMove(event);
