@@ -6,6 +6,9 @@
     keys = {};
     mouse: Vector2 = null;
 
+    INITIAL_BAR_LENGTH = 50;
+    INITIAL_BAR_DEPTH = 10;
+
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
 
@@ -17,14 +20,12 @@
             initialSpeed * Math.sin(Math.random() * 2 * Math.PI),
             12);
 
-        var barLength = 90;
-        var barDepth = 10;
         this.players = new Array<ControlBar>(2);
         this.players[0] = new ControlBar(this.context,
-            20, 0.5 * (context.canvas.height - barLength), 0, 0, barDepth, barLength);
+            20, 0.5 * (context.canvas.height - this.INITIAL_BAR_LENGTH), 0, 0, this.INITIAL_BAR_DEPTH, this.INITIAL_BAR_LENGTH);
         this.players[1] = new ControlBar(this.context,
-            context.canvas.width - 20 - barDepth, 0.5 * (context.canvas.height - barLength),
-            0, 100, barDepth, barLength);
+            context.canvas.width - 20 - this.INITIAL_BAR_DEPTH, 0.5 * (context.canvas.height - this.INITIAL_BAR_LENGTH),
+            0, 100, this.INITIAL_BAR_DEPTH, this.INITIAL_BAR_LENGTH);
 
         this.entities = new Array<Entity>();
         this.entities.push(this.ball);

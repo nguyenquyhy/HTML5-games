@@ -2,14 +2,14 @@ var Game = (function () {
     function Game(context) {
         this.keys = {};
         this.mouse = null;
+        this.INITIAL_BAR_LENGTH = 50;
+        this.INITIAL_BAR_DEPTH = 10;
         this.context = context;
         var initialSpeed = 200;
         this.ball = new Circle(this.context, 0.5 * context.canvas.width, 0.5 * context.canvas.height, initialSpeed * Math.cos(Math.random() * 2 * Math.PI), initialSpeed * Math.sin(Math.random() * 2 * Math.PI), 12);
-        var barLength = 90;
-        var barDepth = 10;
         this.players = new Array(2);
-        this.players[0] = new ControlBar(this.context, 20, 0.5 * (context.canvas.height - barLength), 0, 0, barDepth, barLength);
-        this.players[1] = new ControlBar(this.context, context.canvas.width - 20 - barDepth, 0.5 * (context.canvas.height - barLength), 0, 100, barDepth, barLength);
+        this.players[0] = new ControlBar(this.context, 20, 0.5 * (context.canvas.height - this.INITIAL_BAR_LENGTH), 0, 0, this.INITIAL_BAR_DEPTH, this.INITIAL_BAR_LENGTH);
+        this.players[1] = new ControlBar(this.context, context.canvas.width - 20 - this.INITIAL_BAR_DEPTH, 0.5 * (context.canvas.height - this.INITIAL_BAR_LENGTH), 0, 100, this.INITIAL_BAR_DEPTH, this.INITIAL_BAR_LENGTH);
         this.entities = new Array();
         this.entities.push(this.ball);
         this.entities.push(this.players[0]);
