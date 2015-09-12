@@ -1,5 +1,6 @@
 var Game = (function () {
     function Game(context) {
+        var _this = this;
         this.keys = {};
         this.mouse = null;
         this.INITIAL_BAR_LENGTH = 50;
@@ -10,23 +11,41 @@ var Game = (function () {
         this.players = new Array(2);
         this.players[0] = new ControlBar(this.context, 20, 0.5 * (context.canvas.height - this.INITIAL_BAR_LENGTH), 0, 0, this.INITIAL_BAR_DEPTH, this.INITIAL_BAR_LENGTH);
         this.players[1] = new ControlBar(this.context, context.canvas.width - 20 - this.INITIAL_BAR_DEPTH, 0.5 * (context.canvas.height - this.INITIAL_BAR_LENGTH), 0, 100, this.INITIAL_BAR_DEPTH, this.INITIAL_BAR_LENGTH);
+        var endBoundary1 = new Boundary(context, 0, 0, new Vector2(1, 0));
+        var endBoundary2 = new Boundary(context, context.canvas.width, 0, new Vector2(-1, 0));
+        endBoundary1.collided = function (entity) {
+            if (entity instanceof Circle) {
+                _this.scores[1]++;
+                _this.startGame();
+                return true;
+            }
+            return false;
+        };
+        endBoundary2.collided = function (entity) {
+            if (entity instanceof Circle) {
+                _this.scores[0]++;
+                _this.startGame();
+                return true;
+            }
+            return false;
+        };
         this.entities = new Array();
         this.entities.push(new Boundary(context, 0, 0, new Vector2(0, 1)));
         this.entities.push(new Boundary(context, 0, context.canvas.height, new Vector2(0, -1)));
-        this.entities.push(new Boundary(context, 0, 0, new Vector2(1, 0)));
-        this.entities.push(new Boundary(context, context.canvas.width, 0, new Vector2(-1, 0)));
+        this.entities.push(endBoundary1);
+        this.entities.push(endBoundary2);
         this.entities.push(this.ball);
         this.entities.push(this.players[0]);
         this.entities.push(this.players[1]);
         this.scores = [0, 0];
     }
     Game.prototype.startGame = function () {
-        this.scores = [0, 0];
         var angle = Math.random() * 2 * Math.PI;
         this.ball.position = new Vector2(0.5 * this.context.canvas.width, 0.5 * this.context.canvas.height);
         this.ball.velocity = new Vector2(this.INITIAL_BALL_SPEED * Math.cos(angle), this.INITIAL_BALL_SPEED * Math.sin(angle));
     };
     Game.prototype.stopGame = function () {
+        this.scores = [0, 0];
         this.ball.velocity = new Vector2(0, 0);
     };
     Game.prototype.update = function (elapsed) {
@@ -55,6 +74,7 @@ var Game = (function () {
         this.context.moveTo(this.context.canvas.width / 2, 0);
         this.context.lineTo(this.context.canvas.width / 2, this.context.canvas.height);
         this.context.stroke();
+        // Draw points
         this.context.font = "20px Arial";
         this.context.fillStyle = "#000000";
         this.context.fillText(this.scores[0].toString(), this.context.canvas.width / 2 - 15, 20);

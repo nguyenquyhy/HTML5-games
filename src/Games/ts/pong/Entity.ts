@@ -4,6 +4,7 @@
     context: CanvasRenderingContext2D;
     type: string;
     speedIncrease: number;
+    collided: (Entity) => boolean;
 
     MAX_SPEED = 1200;
     MAX_SPEED_SQ = this.MAX_SPEED * this.MAX_SPEED;

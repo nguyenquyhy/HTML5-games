@@ -62,6 +62,9 @@ var Circle = (function (_super) {
                 this.velocity = reflectedVelocity;
                 this.position = nextPosition;
                 elapsed = timeLeft;
+                if (collision.entity.collided)
+                    if (collision.entity.collided(this))
+                        break;
                 // TODO: try to figure this out
                 i++;
                 if (i === 100) {
