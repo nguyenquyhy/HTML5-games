@@ -19,12 +19,24 @@ module.exports = function (grunt) {
                 files: [
                     { src: ["ts/pong/*.ts", "typings/**/*.ts"], dest: "wwwroot/js/pong" }
                 ],
+                watch: "ts",
+                options: {
+                    fast: 'never',
+                    declaration: true
+                }
+            },
+            tests: {
+                files: [
+                    { src: ["ts/tests/pong/collisions.ts", "typings/**/*.ts", "wwwroot/js/pong/*.d.ts"], dest: "wwwroot/tests/pong/js" }
+                ],
                 options: {
                     fast: 'never'
                 }
             },
-            watch: "ts",
             tsconfig: "tsconfig.json"
+        },
+        qunit: {
+            all: ['tests/**/*.html']
         }
     });
 
@@ -32,4 +44,5 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-ts');
+    grunt.loadNpmTasks('grunt-contrib-qunit');
 };
