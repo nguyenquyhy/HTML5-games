@@ -57,7 +57,10 @@
     }
 
     startGame() {
-        var angle = Math.random() * 2 * Math.PI;
+        var angle = Math.random() * 2 * Math.PI - Math.PI;
+        if (angle > 0) angle = angle / 2;
+        else angle = - Math.PI - angle / 2;
+        angle -= Math.PI / 4;
         this.ball.position = new Vector2(0.5 * this.context.canvas.width, 0.5 * this.context.canvas.height);
         this.ball.velocity = new Vector2(this.INITIAL_BALL_SPEED * Math.cos(angle),
             this.INITIAL_BALL_SPEED * Math.sin(angle))
@@ -94,6 +97,7 @@
         this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
 
         // Draw background
+        this.context.beginPath();
         this.context.strokeStyle = "#000000";
         this.context.moveTo(this.context.canvas.width / 2, 0);
         this.context.lineTo(this.context.canvas.width / 2, this.context.canvas.height);
@@ -102,7 +106,7 @@
         // Draw points
         this.context.font = "20px Arial";
         this.context.fillStyle = "#000000";
-        this.context.fillText(this.scores[0].toString(), this.context.canvas.width / 2 - 15, 20);
+        this.context.fillText(this.scores[0].toString(), this.context.canvas.width / 2 - 6 - this.context.measureText(this.scores[0].toString()).width, 20);
         this.context.fillText(this.scores[1].toString(), this.context.canvas.width / 2 + 5, 20);
 
         // Draw entities

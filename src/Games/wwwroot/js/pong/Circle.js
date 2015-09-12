@@ -76,11 +76,12 @@ var Circle = (function (_super) {
     };
     Circle.prototype.draw = function () {
         _super.prototype.draw.call(this);
-        this.context.strokeStyle = "#000000";
-        this.context.fillStyle = "#FFFF00";
         this.context.beginPath();
-        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
-        this.context.closePath();
+        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, false);
+        this.context.fillStyle = "#FFFFFF";
+        this.context.fill();
+        this.context.strokeStyle = "#000000";
+        this.context.stroke();
     };
     Circle.prototype.checkCollisions = function (elapsed, entities) {
         var currentSpeed = Math.sqrt(this.velocity.squareLength());

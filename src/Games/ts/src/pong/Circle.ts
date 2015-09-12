@@ -48,12 +48,12 @@
 
     draw() {
         super.draw();
-
-        this.context.strokeStyle = "#000000";
-        this.context.fillStyle = "#FFFF00";
         this.context.beginPath();
-        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
-        this.context.closePath();
+        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, false);
+        this.context.fillStyle = "#FFFFFF";
+        this.context.fill();
+        this.context.strokeStyle = "#000000";
+        this.context.stroke();
     }
 
     checkCollisions(elapsed: number, entities: Entity[]): Collision {
