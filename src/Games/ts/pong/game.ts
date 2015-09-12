@@ -8,19 +8,16 @@
 
     INITIAL_BAR_LENGTH = 50;
     INITIAL_BAR_DEPTH = 10;
+    INITIAL_BALL_SPEED = 200;
 
     scores: number[];
 
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
 
-        var initialSpeed = 200;
 
         this.ball = new Circle(this.context,
-            0.5 * context.canvas.width, 0.5 * context.canvas.height,
-            initialSpeed * Math.cos(Math.random() * 2 * Math.PI),
-            initialSpeed * Math.sin(Math.random() * 2 * Math.PI),
-            12);
+            0.5 * context.canvas.width, 0.5 * context.canvas.height, 0, 0, 12);
 
         this.players = new Array<ControlBar>(2);
         this.players[0] = new ControlBar(this.context,
@@ -39,6 +36,18 @@
         this.entities.push(this.players[1]);
 
         this.scores = [0, 0];
+    }
+
+    startGame() {
+        this.scores = [0, 0];
+        var angle = Math.random() * 2 * Math.PI;
+        this.ball.position = new Vector2(0.5 * this.context.canvas.width, 0.5 * this.context.canvas.height);
+        this.ball.velocity = new Vector2(this.INITIAL_BALL_SPEED * Math.cos(angle),
+            this.INITIAL_BALL_SPEED * Math.sin(angle))
+    }
+
+    stopGame() {
+        this.ball.velocity = new Vector2(0, 0)
     }
 
     update(elapsed: number) {
@@ -169,6 +178,17 @@ if (canvas.getContext) {
             game.doMouseUp(event);
         }, false);
     }
+
+    var btnStart = $('#btnStart');
+    btnStart.click(() => {
+        if (btnStart.text() === 'Start Game') {
+            game.startGame();
+            btnStart.text('Stop Game');
+        } else {
+            game.stopGame();
+            btnStart.text('Start Game');
+        }
+    });
 
     window.requestAnimationFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['msRequestAnimationFrame'] || window['mozRequestAnimationFrame'];
 
