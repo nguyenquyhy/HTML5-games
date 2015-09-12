@@ -41,7 +41,7 @@ namespace Games
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerfactory)
         {
             // Add the console logger.
-            loggerfactory.AddConsole(minLevel: LogLevel.Warning);
+            loggerfactory.AddConsole(minLevel: LogLevel.Information);
 
             //app.UseApplicationInsightsRequestTelemetry();
 
