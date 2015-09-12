@@ -11,7 +11,7 @@ var Boundary = (function (_super) {
         this.normal = normal;
     }
     Boundary.prototype.update = function (elapsed, entities) {
+        // Stand still
     };
     return Boundary;
 })(Entity);
-//# sourceMappingURL=Boundary.js.map

@@ -35,4 +35,3 @@ var ControlBar = (function (_super) {
     };
     return ControlBar;
 })(Entity);
-//# sourceMappingURL=ControlBar.js.map

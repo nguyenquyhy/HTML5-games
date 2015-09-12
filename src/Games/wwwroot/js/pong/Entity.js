@@ -27,4 +27,3 @@ var Collision = (function () {
     }
     return Collision;
 })();
-//# sourceMappingURL=Entity.js.map

@@ -39,4 +39,3 @@ var Vector2 = (function () {
     };
     return Vector2;
 })();
-//# sourceMappingURL=Vector2.js.map

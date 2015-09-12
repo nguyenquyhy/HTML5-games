@@ -48,7 +48,9 @@ var Game = (function () {
         }
     };
     Game.prototype.render = function (elapsed) {
+        // Clear everything
         this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
+        // Draw background
         this.context.strokeStyle = "#000000";
         this.context.moveTo(this.context.canvas.width / 2, 0);
         this.context.lineTo(this.context.canvas.width / 2, this.context.canvas.height);
@@ -57,6 +59,7 @@ var Game = (function () {
         this.context.fillStyle = "#000000";
         this.context.fillText(this.scores[0].toString(), this.context.canvas.width / 2 - 15, 20);
         this.context.fillText(this.scores[1].toString(), this.context.canvas.width / 2 + 5, 20);
+        // Draw entities
         if (this.entities) {
             for (var i = 0; i < this.entities.length; i++) {
                 this.entities[i].draw();
@@ -70,6 +73,7 @@ var Game = (function () {
         delete this.keys[e.keyCode];
     };
     Game.prototype.doMouseDown = function (e) {
+        // TODO: support multi-touch
         if (e.buttons > 0) {
             this.mouse = new Vector2(e.offsetX, e.offsetY);
         }
@@ -122,6 +126,7 @@ if (canvas.getContext) {
         }, false);
     }
     else {
+        //Provide fallback for user agents that do not support Pointer Events
         canvas.addEventListener("mousemove", function (event) {
             game.doMouseMove(event);
         }, false);
@@ -146,4 +151,3 @@ if (canvas.getContext) {
     window.requestAnimationFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['msRequestAnimationFrame'] || window['mozRequestAnimationFrame'];
     tick();
 }
-//# sourceMappingURL=game.js.map

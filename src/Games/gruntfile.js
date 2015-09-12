@@ -17,13 +17,14 @@ module.exports = function (grunt) {
         ts: {
             default: {
                 files: [
-                    { src: ["ts/pong/*.ts"], dest: "wwwroot/js/pong" }
+                    { src: ["ts/pong/*.ts", "typings/**/*.ts"], dest: "wwwroot/js/pong" }
                 ],
                 options: {
                     fast: 'never'
                 }
             },
-            watch: "ts"
+            watch: "ts",
+            tsconfig: "tsconfig.json"
         }
     });
 

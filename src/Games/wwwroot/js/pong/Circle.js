@@ -11,6 +11,7 @@ var Circle = (function (_super) {
         this.collideEdge = function (Ox, Oy, r, vx, vy, x1, y1, y2, xNormal) {
             if (vx * xNormal >= 0)
                 return -1;
+            // (Ox + r) is moving to x1 while Oy must be between y1 and y2 at collision
             var t = Math.min((x1 - Ox - r) / vx, (x1 - Ox + r) / vx);
             if (t < 0)
                 return -1;
@@ -33,7 +34,7 @@ var Circle = (function (_super) {
             else if (diff == 0)
                 return -b / (2 * a);
             else {
-                return (-b - Math.sqrt(diff)) / (2 * a);
+                return (-b - Math.sqrt(diff)) / (2 * a); // take only the smaller solution
             }
         };
         this.radius = radius;
@@ -61,6 +62,7 @@ var Circle = (function (_super) {
                 this.velocity = reflectedVelocity;
                 this.position = nextPosition;
                 elapsed = timeLeft;
+                // TODO: try to figure this out
                 i++;
                 if (i === 100) {
                     console.log(collision);
@@ -82,17 +84,20 @@ var Circle = (function (_super) {
         var traveledDistance = currentSpeed * elapsed;
         var nearestCollision = null;
         for (var i = 0; i < entities.length; i++) {
+            // Scan all entities
             var entity = entities[i];
             if (entity !== this) {
                 if (entity instanceof Boundary) {
                     var time = -1;
                     if (entity.normal.x === 0) {
+                        // Horizontal boundary
                         if (this.velocity.y * entity.normal.y < 0) {
                             var yDistance = (this.position.y - entity.position.y) * entity.normal.y - this.radius;
                             time = yDistance / Math.abs(this.velocity.y);
                         }
                     }
                     else if (entity.normal.y === 0) {
+                        // Vertical boundary
                         if (this.velocity.x * entity.normal.x < 0) {
                             var xDistance = (this.position.x - entity.position.x) * entity.normal.x - this.radius;
                             var time = xDistance / Math.abs(this.velocity.x);
@@ -100,6 +105,7 @@ var Circle = (function (_super) {
                     }
                     if (time >= 0 && time < elapsed)
                         if (nearestCollision === null || nearestCollision.time > time) {
+                            //console.log(i + ' ' + time);
                             nearestCollision = new Collision(time, entity, entity.normal, entity.speedIncrease);
                         }
                 }
@@ -107,14 +113,18 @@ var Circle = (function (_super) {
                     var centerVector = this.position.subtract(entity.position);
                     var centerDistanceSq = centerVector.squareLength();
                     if (centerDistanceSq < this.square(this.radius + entity.radius + traveledDistance)) {
+                        // Collide with a circle
                         var time = (Math.sqrt(centerDistanceSq) - (this.radius + entity.radius)) / currentSpeed;
                         if (nearestCollision === null || nearestCollision.time > time)
                             nearestCollision = new Collision(time, entity, centerVector, entity.speedIncrease);
                     }
                 }
                 else if (entity instanceof ControlBar) {
+                    // Check 4 edges
+                    // Handle vertical edges
                     var t1 = this.collideEdge(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y, entity.position.y + entity.size.y, -1);
                     var t2 = this.collideEdge(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y, entity.position.y + entity.size.y, 1);
+                    // Swap x and y to make the code handle horizontal edges
                     var t3 = this.collideEdge(this.position.y, this.position.x, this.radius, this.velocity.y, this.velocity.x, entity.position.y, entity.position.x, entity.position.x + entity.size.x, -1);
                     var t4 = this.collideEdge(this.position.y, this.position.x, this.radius, this.velocity.y, this.velocity.x, entity.position.y + entity.size.y, entity.position.x, entity.position.x + entity.size.x, 1);
                     var normal = new Vector2(-1, 0);
@@ -131,10 +141,12 @@ var Circle = (function (_super) {
                         normal = new Vector2(0, 1);
                     }
                     if (t1 >= 0 && t1 < elapsed) {
+                        // Collide with edge
                         if (nearestCollision === null || nearestCollision.time > t1)
                             nearestCollision = new Collision(t1, entity, normal, entity.speedIncrease);
                     }
                     else {
+                        // No edge collision => check 4 corners
                         var tc1 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y, -1, -1);
                         var tc2 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y, 1, -1);
                         var tc3 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y + entity.size.y, -1, 1);
@@ -153,6 +165,7 @@ var Circle = (function (_super) {
                             normal = new Vector2(1, 1);
                         }
                         if (tc1 >= 0 && tc1 < elapsed) {
+                            // Collide with edge
                             if (nearestCollision === null || nearestCollision.time > tc1)
                                 nearestCollision = new Collision(tc1, entity, normal, entity.speedIncrease);
                         }
@@ -164,4 +177,3 @@ var Circle = (function (_super) {
     };
     return Circle;
 })(Entity);
-//# sourceMappingURL=Circle.js.map
