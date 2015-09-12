@@ -8,7 +8,9 @@ var Circle = (function (_super) {
     __extends(Circle, _super);
     function Circle(context, x, y, velocityX, velocityY, radius) {
         _super.call(this, context, x, y, velocityX, velocityY, 1.0);
-        this.collideEdge = function (Ox, Oy, r, vx, vy, x1, y1, y2) {
+        this.collideEdge = function (Ox, Oy, r, vx, vy, x1, y1, y2, xNormal) {
+            if (vx * xNormal >= 0)
+                return -1;
             var t = Math.min((x1 - Ox - r) / vx, (x1 - Ox + r) / vx);
             if (t < 0)
                 return -1;
@@ -17,7 +19,9 @@ var Circle = (function (_super) {
                 return t;
             return -1;
         };
-        this.collideCorner = function (Ox, Oy, r, vx, vy, x1, y1) {
+        this.collideCorner = function (Ox, Oy, r, vx, vy, x1, y1, xNormal, yNormal) {
+            if (vx * xNormal >= 0 && vy * yNormal >= 0)
+                return -1;
             var dx = x1 - Ox;
             var dy = y1 - Oy;
             var a = vx * vx + vy * vy;
@@ -36,24 +40,33 @@ var Circle = (function (_super) {
         this.type = 'Circle';
     }
     Circle.prototype.update = function (elapsed, entities) {
-        var collision = this.checkCollisions(elapsed, entities);
-        if (collision === null) {
-            _super.prototype.update.call(this, elapsed, entities);
-        }
-        else {
-            var nextPosition = this.position.add(this.velocity.scale(collision.time));
-            var timeLeft = elapsed - collision.time;
-            collision.normal.selfNormalize();
-            var velocityReversed = this.velocity.scale(-1);
-            var projectionReversed = collision.normal.scale(velocityReversed.dotProduct(collision.normal));
-            var diff = projectionReversed.subtract(velocityReversed).scale(2);
-            var reflectedVelocity = velocityReversed.add(diff);
-            nextPosition.selfAdd(reflectedVelocity.scale(timeLeft));
-            if (collision.speedIncrease !== 1.0 && (collision.speedIncrease < 1.0 || this.velocity.squareLength() < this.MAX_SPEED_SQ)) {
-                reflectedVelocity.selfScale(collision.speedIncrease);
+        var i = 0;
+        while (true) {
+            var collision = this.checkCollisions(elapsed, entities);
+            if (collision === null) {
+                _super.prototype.update.call(this, elapsed, entities);
+                break;
             }
-            this.velocity = reflectedVelocity;
-            this.position = nextPosition;
+            else {
+                var nextPosition = this.position.add(this.velocity.scale(collision.time));
+                var timeLeft = elapsed - collision.time;
+                collision.normal.selfNormalize();
+                var velocityReversed = this.velocity.scale(-1);
+                var projectionReversed = collision.normal.scale(velocityReversed.dotProduct(collision.normal));
+                var diff = projectionReversed.subtract(velocityReversed).scale(2);
+                var reflectedVelocity = velocityReversed.add(diff);
+                if (collision.speedIncrease !== 1.0 && (collision.speedIncrease < 1.0 || this.velocity.squareLength() < this.MAX_SPEED_SQ)) {
+                    reflectedVelocity.selfScale(collision.speedIncrease);
+                }
+                this.velocity = reflectedVelocity;
+                this.position = nextPosition;
+                elapsed = timeLeft;
+                i++;
+                if (i === 100) {
+                    console.log(collision);
+                    break;
+                }
+            }
         }
     };
     Circle.prototype.draw = function () {
@@ -100,10 +113,10 @@ var Circle = (function (_super) {
                     }
                 }
                 else if (entity instanceof ControlBar) {
-                    var t1 = this.collideEdge(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y, entity.position.y + entity.size.y);
-                    var t2 = this.collideEdge(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y, entity.position.y + entity.size.y);
-                    var t3 = this.collideEdge(this.position.y, this.position.x, this.radius, this.velocity.y, this.velocity.x, entity.position.y, entity.position.x, entity.position.x + entity.size.x);
-                    var t4 = this.collideEdge(this.position.y, this.position.x, this.radius, this.velocity.y, this.velocity.x, entity.position.y + entity.size.y, entity.position.x, entity.position.x + entity.size.x);
+                    var t1 = this.collideEdge(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y, entity.position.y + entity.size.y, -1);
+                    var t2 = this.collideEdge(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y, entity.position.y + entity.size.y, 1);
+                    var t3 = this.collideEdge(this.position.y, this.position.x, this.radius, this.velocity.y, this.velocity.x, entity.position.y, entity.position.x, entity.position.x + entity.size.x, -1);
+                    var t4 = this.collideEdge(this.position.y, this.position.x, this.radius, this.velocity.y, this.velocity.x, entity.position.y + entity.size.y, entity.position.x, entity.position.x + entity.size.x, 1);
                     var normal = new Vector2(-1, 0);
                     if (t2 > 0 && (t1 < 0 || t1 > t2)) {
                         t1 = t2;
@@ -122,10 +135,10 @@ var Circle = (function (_super) {
                             nearestCollision = new Collision(t1, entity, normal, entity.speedIncrease);
                     }
                     else {
-                        var tc1 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y);
-                        var tc2 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y);
-                        var tc3 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y + entity.size.y);
-                        var tc4 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y + entity.size.y);
+                        var tc1 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y, -1, -1);
+                        var tc2 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y, 1, -1);
+                        var tc3 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x, entity.position.y + entity.size.y, -1, 1);
+                        var tc4 = this.collideCorner(this.position.x, this.position.y, this.radius, this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y + entity.size.y, 1, 1);
                         normal = new Vector2(-1, -1);
                         if (tc2 > 0 && (tc1 < 0 || tc1 > tc2)) {
                             tc1 = tc2;

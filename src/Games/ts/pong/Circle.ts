@@ -8,28 +8,37 @@
     }
 
     update(elapsed: number, entities: Entity[]) {
+        var i = 0;
+        while (true) {
+            var collision = this.checkCollisions(elapsed, entities);
 
-        var collision = this.checkCollisions(elapsed, entities);
+            if (collision === null) {
+                super.update(elapsed, entities);
+                break;
+            } else {
+                var nextPosition = this.position.add(this.velocity.scale(collision.time));
 
-        if (collision === null) {
-            super.update(elapsed, entities);
-        } else {
-            var nextPosition = this.position.add(this.velocity.scale(collision.time));
+                var timeLeft = elapsed - collision.time;
+                collision.normal.selfNormalize();
+                var velocityReversed = this.velocity.scale(-1);
+                var projectionReversed = collision.normal.scale(velocityReversed.dotProduct(collision.normal));
+                var diff = projectionReversed.subtract(velocityReversed).scale(2);
+                var reflectedVelocity = velocityReversed.add(diff);
 
-            var timeLeft = elapsed - collision.time;
-            collision.normal.selfNormalize();
-            var velocityReversed = this.velocity.scale(-1);
-            var projectionReversed = collision.normal.scale(velocityReversed.dotProduct(collision.normal));
-            var diff = projectionReversed.subtract(velocityReversed).scale(2);
-            var reflectedVelocity = velocityReversed.add(diff);
+                if (collision.speedIncrease !== 1.0 && (collision.speedIncrease < 1.0 || this.velocity.squareLength() < this.MAX_SPEED_SQ)) {
+                    reflectedVelocity.selfScale(collision.speedIncrease)
+                }
 
-            nextPosition.selfAdd(reflectedVelocity.scale(timeLeft));
+                this.velocity = reflectedVelocity;
+                this.position = nextPosition;
+                elapsed = timeLeft;
 
-            if (collision.speedIncrease !== 1.0 && (collision.speedIncrease < 1.0 || this.velocity.squareLength() < this.MAX_SPEED_SQ)) {
-                reflectedVelocity.selfScale(collision.speedIncrease)
+                // TODO: try to figure this out
+                i++;
+                if (i === 100) {
+                    console.log(collision); break;
+                }
             }
-            this.velocity = reflectedVelocity;
-            this.position = nextPosition;
         }
     }
 
@@ -41,8 +50,6 @@
         this.context.beginPath();
         this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true);
         this.context.closePath();
-        //this.context.stroke();
-        //this.context.fill();
     }
 
     checkCollisions(elapsed: number, entities: Entity[]): Collision {
@@ -89,20 +96,20 @@
                     // Handle vertical edges
                     var t1 = this.collideEdge(this.position.x, this.position.y, this.radius,
                         this.velocity.x, this.velocity.y,
-                        entity.position.x, entity.position.y, entity.position.y + entity.size.y);
+                        entity.position.x, entity.position.y, entity.position.y + entity.size.y, -1);
 
                     var t2 = this.collideEdge(this.position.x, this.position.y, this.radius,
                         this.velocity.x, this.velocity.y,
-                        entity.position.x + entity.size.x, entity.position.y, entity.position.y + entity.size.y);
+                        entity.position.x + entity.size.x, entity.position.y, entity.position.y + entity.size.y, 1);
 
                     // Swap x and y to make the code handle horizontal edges
                     var t3 = this.collideEdge(this.position.y, this.position.x, this.radius,
                         this.velocity.y, this.velocity.x,
-                        entity.position.y, entity.position.x, entity.position.x + entity.size.x);
+                        entity.position.y, entity.position.x, entity.position.x + entity.size.x, -1);
 
                     var t4 = this.collideEdge(this.position.y, this.position.x, this.radius,
                         this.velocity.y, this.velocity.x,
-                        entity.position.y + entity.size.y, entity.position.x, entity.position.x + entity.size.x);
+                        entity.position.y + entity.size.y, entity.position.x, entity.position.x + entity.size.x, 1);
 
                     var normal = new Vector2(-1, 0);
                     if (t2 > 0 && (t1 < 0 || t1 > t2)) {
@@ -123,13 +130,13 @@
                     else {
                         // No edge collision => check 4 corners
                         var tc1 = this.collideCorner(this.position.x, this.position.y, this.radius,
-                            this.velocity.x, this.velocity.y, entity.position.x, entity.position.y);
+                            this.velocity.x, this.velocity.y, entity.position.x, entity.position.y, -1, -1);
                         var tc2 = this.collideCorner(this.position.x, this.position.y, this.radius,
-                            this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y);
+                            this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y, 1, -1);
                         var tc3 = this.collideCorner(this.position.x, this.position.y, this.radius,
-                            this.velocity.x, this.velocity.y, entity.position.x, entity.position.y + entity.size.y);
+                            this.velocity.x, this.velocity.y, entity.position.x, entity.position.y + entity.size.y, -1, 1);
                         var tc4 = this.collideCorner(this.position.x, this.position.y, this.radius,
-                            this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y + entity.size.y);
+                            this.velocity.x, this.velocity.y, entity.position.x + entity.size.x, entity.position.y + entity.size.y, 1, 1);
 
                         normal = new Vector2(-1, -1);
                         if (tc2 > 0 && (tc1 < 0 || tc1 > tc2)) {
@@ -155,16 +162,20 @@
         return nearestCollision;
     }
 
-    collideEdge = (Ox, Oy, r, vx, vy, x1, y1, y2) => {
+    collideEdge = (Ox, Oy, r, vx, vy, x1, y1, y2, xNormal) => {
+        if (vx * xNormal >= 0) return -1;
+        // (Ox + r) is moving to x1 while Oy must be between y1 and y2 at collision
         var t = Math.min((x1 - Ox - r) / vx, (x1 - Ox + r) / vx);
         if (t < 0) return -1;
+
         var y = Oy + vy * t;
         if (y1 <= y && y <= y2)
             return t;
         return -1;
     }
 
-    collideCorner = (Ox, Oy, r, vx, vy, x1, y1) => {
+    collideCorner = (Ox, Oy, r, vx, vy, x1, y1, xNormal, yNormal) => {
+        if (vx * xNormal >= 0 && vy * yNormal >= 0) return -1;
         var dx = x1 - Ox;
         var dy = y1 - Oy;
         var a = vx * vx + vy * vy;
