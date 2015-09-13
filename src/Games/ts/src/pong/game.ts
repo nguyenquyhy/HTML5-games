@@ -127,13 +127,13 @@
 
     doMouseDown(e) {
         // TODO: support multi-touch
-        if (e.buttons > 0) {
+        if (e.buttons > 0 || e.pointerType === "touch") {
             this.mouse = new Vector2(e.offsetX, e.offsetY);
         }
     }
 
     doMouseMove(e) {
-        if (e.buttons > 0) {
+        if (e.buttons > 0 || e.pointerType === "touch") {
             this.mouse = new Vector2(e.offsetX, e.offsetY);
         }
     }

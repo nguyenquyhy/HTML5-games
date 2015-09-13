@@ -100,12 +100,12 @@ var Game = (function () {
     };
     Game.prototype.doMouseDown = function (e) {
         // TODO: support multi-touch
-        if (e.buttons > 0) {
+        if (e.buttons > 0 || e.pointerType === "touch") {
             this.mouse = new Vector2(e.offsetX, e.offsetY);
         }
     };
     Game.prototype.doMouseMove = function (e) {
-        if (e.buttons > 0) {
+        if (e.buttons > 0 || e.pointerType === "touch") {
             this.mouse = new Vector2(e.offsetX, e.offsetY);
         }
     };
