@@ -28,10 +28,12 @@
     "bower_components",
     "**.xproj",
     "**.user",
-    "**.vspscc"
+    "**.vspscc",
+    "*.d.ts"
   ],
   "exclude": [
     "wwwroot",
+    "wwwroot/js/**/*.d.ts",
     "node_modules",
     "bower_components",
     ".tscache"

@@ -21,6 +21,15 @@
         this.y *= value;
     }
 
+    selfNormalize() {
+        var squareLength = this.squareLength();
+        if (squareLength != 1) {
+            var length = Math.sqrt(squareLength);
+            this.x /= length;
+            this.y /= length;
+        }
+    }
+
     scale(value: number): Vector2 {
         return new Vector2(this.x * value, this.y * value);
     }
@@ -35,5 +44,13 @@
 
     crossProduct(vector: Vector2): number {
         return this.x * vector.y + this.y * vector.x;
+    }
+
+    dotProduct(vector: Vector2): number {
+        return this.x * vector.x + this.y * vector.y;
+    }
+
+    toString(): string {
+        return this.x + " " + this.y;
     }
 }

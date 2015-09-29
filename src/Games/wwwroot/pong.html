@@ -6,12 +6,28 @@
 </head>
 <body>
     <h2>Pong</h2>
-    <canvas id="mainCanvas" width="1000" height="500" style="border: 1px solid black; -ms-touch-action: none; touch-action: none;">
+    <canvas id="mainCanvas" width="400" height="200" style="border: 1px solid black; -ms-touch-action: none; touch-action: none;">
 
-    </canvas>
+    </canvas><br />
+    <button id="btnStart">Start Game</button>
+    <h3>How to play</h3>
+    <ul>
+        <li>You can use up/down arrow key to move your bar on the left.</li>
+        <li>You can also click/touch the top/bottom half of the playing area to move the bar.</li>
+        <li>Try not to let the ball go pass you</li>
+    </ul>
+    <h3>Debug</h3>
+    <ul>
+        <li>FPS: <span id="txtFPS"></span></li>
+        <li>Pointer Event: <span id="txtPointerEvent"></span></li>
+    </ul>
+    <script src="lib/handjs/hand.js"></script>
     <script src="lib/jquery/jquery.js"></script>
     <script src="js/pong/vector2.js"></script>
     <script src="js/pong/entity.js"></script>
+    <script src="js/pong/boundary.js"></script>
+    <script src="js/pong/controlbar.js"></script>
+    <script src="js/pong/circle.js"></script>
     <script src="js/pong/game.js"></script>
 </body>
 </html>
