@@ -11,9 +11,14 @@ namespace Games.Repositories
 {
     public class JsonFileChineseChessRepository : IChineseChessRepository
     {
-        private const string FileName = "games.json";
+        private string fileName;
         private SemaphoreSlim sm = new SemaphoreSlim(1);
         private List<Game> cachedGames = null;
+
+        public JsonFileChineseChessRepository(string fileName)
+        {
+            this.fileName = fileName;
+        }
 
         public async Task<Game> GetGameAsync(string id)
         {
@@ -34,14 +39,14 @@ namespace Games.Repositories
                 await sm.WaitAsync();
                 if (cachedGames == null)
                 {
-                    if (!File.Exists(FileName))
+                    if (!File.Exists(fileName))
                     {
                         cachedGames = new List<Game>();
                         return;
                     }
                     try
                     {
-                        var dataString = File.ReadAllText(FileName);
+                        var dataString = File.ReadAllText(fileName);
                         cachedGames = JsonConvert.DeserializeObject<List<Game>>(dataString);
                     }
                     catch
@@ -61,8 +66,14 @@ namespace Games.Repositories
         {
             try
             {
+                await LoadGamesAsync();
                 await sm.WaitAsync();
-                cachedGames = null;
+                if (cachedGames != null)
+                {
+                    var dataString = JsonConvert.SerializeObject(cachedGames);
+                    File.WriteAllText(fileName, dataString);
+                    cachedGames = null;
+                }
             }
             catch
             {

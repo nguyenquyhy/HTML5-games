@@ -9,6 +9,7 @@ using Microsoft.Framework.Logging;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Framework.Configuration;
 using Microsoft.Dnx.Runtime;
+using Games.Repositories;
 
 namespace Games
 {
@@ -36,6 +37,7 @@ namespace Games
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddApplicationInsightsTelemetry(Configuration);
+            services.AddSingleton<IChineseChessRepository>(s => new JsonFileChineseChessRepository("games.json"));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerfactory)
