@@ -38,7 +38,8 @@ declare class ChineseChess {
     spriteSize: number;
     pieces: Piece[];
     constructor(context: CanvasRenderingContext2D);
-    startGame(code: string): void;
+    createGame(password: string): void;
+    joinGame(code: string): void;
     stopGame(): void;
     update(elapsed: number): void;
     render(elapsed: number): void;

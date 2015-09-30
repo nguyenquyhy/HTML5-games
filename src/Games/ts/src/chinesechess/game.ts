@@ -16,11 +16,7 @@ class ChineseChess {
         this.spritesheet.src = "/images/xiangqi-pieces-sprites-80.png";
     }
 
-    startGame(code: string) {
-        if (code == "") {
-            alert('Please enter game code');
-            return;
-        }
+    createGame(password: string) {
         this.pieces = new Array<Piece>();
         this.pieces.push(new Piece(this.context, new Vector2(4, 0), this.spritesheet, new Rectangle(0, 0, this.spriteSize, this.spriteSize)));
         this.pieces.push(new Piece(this.context, new Vector2(3, 0), this.spritesheet, new Rectangle(this.spriteSize, 0, this.spriteSize, this.spriteSize)));
@@ -56,6 +52,13 @@ class ChineseChess {
         this.pieces.push(new Piece(this.context, new Vector2(4, 6), this.spritesheet, new Rectangle(this.spriteSize * 6, this.spriteSize, this.spriteSize, this.spriteSize)));
         this.pieces.push(new Piece(this.context, new Vector2(6, 6), this.spritesheet, new Rectangle(this.spriteSize * 6, this.spriteSize, this.spriteSize, this.spriteSize)));
         this.pieces.push(new Piece(this.context, new Vector2(8, 6), this.spritesheet, new Rectangle(this.spriteSize * 6, this.spriteSize, this.spriteSize, this.spriteSize)));
+    }
+
+    joinGame(code: string) {
+        if (code == "") {
+            alert('Please enter game code');
+            return;
+        }
     }
 
     stopGame() {
@@ -177,7 +180,7 @@ if (canvas.getContext) {
     }
 
     $('#btnCreate').click(() => {
-        chineseChess.startGame($('#txtCode').val());
+        chineseChess.createGame($('#txtPassword').val());
     });
 
     window.requestAnimationFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['msRequestAnimationFrame'] || window['mozRequestAnimationFrame'];

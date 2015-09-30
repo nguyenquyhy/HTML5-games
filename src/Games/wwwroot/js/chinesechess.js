@@ -77,11 +77,7 @@ var ChineseChess = (function () {
         this.spritesheet = new Image();
         this.spritesheet.src = "/images/xiangqi-pieces-sprites-80.png";
     }
-    ChineseChess.prototype.startGame = function (code) {
-        if (code == "") {
-            alert('Please enter game code');
-            return;
-        }
+    ChineseChess.prototype.createGame = function (password) {
         this.pieces = new Array();
         this.pieces.push(new Piece(this.context, new Vector2(4, 0), this.spritesheet, new Rectangle(0, 0, this.spriteSize, this.spriteSize)));
         this.pieces.push(new Piece(this.context, new Vector2(3, 0), this.spritesheet, new Rectangle(this.spriteSize, 0, this.spriteSize, this.spriteSize)));
@@ -115,6 +111,12 @@ var ChineseChess = (function () {
         this.pieces.push(new Piece(this.context, new Vector2(4, 6), this.spritesheet, new Rectangle(this.spriteSize * 6, this.spriteSize, this.spriteSize, this.spriteSize)));
         this.pieces.push(new Piece(this.context, new Vector2(6, 6), this.spritesheet, new Rectangle(this.spriteSize * 6, this.spriteSize, this.spriteSize, this.spriteSize)));
         this.pieces.push(new Piece(this.context, new Vector2(8, 6), this.spritesheet, new Rectangle(this.spriteSize * 6, this.spriteSize, this.spriteSize, this.spriteSize)));
+    };
+    ChineseChess.prototype.joinGame = function (code) {
+        if (code == "") {
+            alert('Please enter game code');
+            return;
+        }
     };
     ChineseChess.prototype.stopGame = function () {
     };
@@ -216,7 +218,7 @@ if (canvas.getContext) {
         }, false);
     }
     $('#btnCreate').click(function () {
-        chineseChess.startGame($('#txtCode').val());
+        chineseChess.createGame($('#txtPassword').val());
     });
     window.requestAnimationFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['msRequestAnimationFrame'] || window['mozRequestAnimationFrame'];
     tickChineseChess();
