@@ -3,11 +3,28 @@
 <head>
     <meta charset="utf-8" />
     <title>Chinese Chess</title>
+    <style>
+        button {
+            width: 100px;
+            height: 25px;
+            margin: 0 5px 0 0;
+        }
+
+        input {
+            width: 200px;
+            height: 25px;
+            margin: 0 0 5px 0;
+        }
+    </style>
 </head>
 <body>
     <h2>Chinese Chess</h2>
-    <canvas id="mainCanvas" width="400" height="400" style="border: 1px solid black; -ms-touch-action: none; touch-action: none;"></canvas><br />
-    <button id="btnStart">Start Game</button>
+    <canvas id="mainCanvas" width="400" height="440" style="border: 1px solid black; -ms-touch-action: none; touch-action: none;"></canvas><br />
+    <div id="divStart">
+        <input id="txtCode" type="number" placeholder="enter game code here" /><br />
+        <input id="txtPassword" type="password" placeholder="enter game password here" /><br />
+        <button id="btnCreate">Create Game</button><button id="btnJoin">Join Game</button>
+    </div>
 
     <h3>Debug</h3>
     <ul>
