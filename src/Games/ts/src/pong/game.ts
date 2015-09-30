@@ -1,4 +1,7 @@
-﻿class Game {
+﻿/// <reference path="entity.ts" />
+/// <reference path="circle.ts" />
+/// <reference path="boundary.ts" />
+class Pong {
     context: CanvasRenderingContext2D;
     entities: Entity[];
     ball: Entity;
@@ -144,12 +147,12 @@
 }
 
 var lastUpdate;
-var game: Game;
+var pong: Pong;
 var txtFPS = $('#txtFPS');
 var sum = 0;
 var count = 0;
 
-function tick() {
+function tickPong() {
     var now = Date.now();
 
     if (lastUpdate) {
@@ -164,39 +167,39 @@ function tick() {
         }
 
         lastUpdate = now;
-        game.update(elapsed);
-        game.render(elapsed);
+        pong.update(elapsed);
+        pong.render(elapsed);
     } else {
         lastUpdate = now;
     }
 
-    window.requestAnimationFrame(tick);
+    window.requestAnimationFrame(tickPong);
 }
 
 var canvas = <HTMLCanvasElement>document.getElementById('mainCanvas');
 var context: CanvasRenderingContext2D;
 if (canvas.getContext) {
     context = canvas.getContext('2d');
-    game = new Game(context);
+    pong = new Pong(context);
 
     window.addEventListener("keydown", function (e) {
-        game.doKeyDown(e);
+        pong.doKeyDown(e);
     }, true);
 
     window.addEventListener("keyup", function (e) {
-        game.doKeyUp(e);
+        pong.doKeyUp(e);
     }, true);
 
     if (window['PointerEvent']) {
         $('#txtPointerEvent').text('Supported');
         canvas.addEventListener("pointermove", function (event) {
-            game.doMouseMove(event);
+            pong.doMouseMove(event);
         }, false);
         canvas.addEventListener("pointerdown", function (event) {
-            game.doMouseDown(event);
+            pong.doMouseDown(event);
         }, false);
         canvas.addEventListener("pointerup", function (event) {
-            game.doMouseUp(event);
+            pong.doMouseUp(event);
         }, false);
 
         //if (window.navigator.maxTouchPoints > 1)
@@ -206,28 +209,28 @@ if (canvas.getContext) {
         $('#txtPointerEvent').text('Not supported');
         //Provide fallback for user agents that do not support Pointer Events
         canvas.addEventListener("mousemove", function (event) {
-            game.doMouseMove(event);
+            pong.doMouseMove(event);
         }, false);
         canvas.addEventListener("mousedown", function (event) {
-            game.doMouseDown(event);
+            pong.doMouseDown(event);
         }, false);
         canvas.addEventListener("mouseup", function (event) {
-            game.doMouseUp(event);
+            pong.doMouseUp(event);
         }, false);
     }
 
     var btnStart = $('#btnStart');
     btnStart.click(() => {
         if (btnStart.text() === 'Start Game') {
-            game.startGame();
+            pong.startGame();
             btnStart.text('Stop Game');
         } else {
-            game.stopGame();
+            pong.stopGame();
             btnStart.text('Start Game');
         }
     });
 
     window.requestAnimationFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['msRequestAnimationFrame'] || window['mozRequestAnimationFrame'];
 
-    tick();
+    tickPong();
 }

@@ -17,7 +17,8 @@ module.exports = function (grunt) {
         ts: {
             default: {
                 files: [
-                    { src: ["ts/src/pong/*.ts", "typings/**/*.ts"], dest: "wwwroot/js/pong" }
+                    { src: ["ts/src/pong/*.ts", "ts/src/common/*.ts", "typings/**/*.ts"], dest: "wwwroot/js/pong.js" },
+                    { src: ["ts/src/chinesechess/*.ts", "ts/src/common/*.ts", "typings/**/*.ts"], dest: "wwwroot/js/chinesechess.js" },
                 ],
                 watch: "ts/src",
                 options: {
